@@ -1,0 +1,137 @@
+#lang sicp
+;; Structure And Interpretation of Computer Programs 
+;; Chapter 1
+;; Trying out examples:
+(define pi 3.14159)
+(define radius 10)
+(* pi (* radius radius))
+(define circumference (* 2 pi radius))
+; circumference
+
+(define (square x)
+  (* x x))
+; (square (square (+ 1 2))
+
+(define (sum-of-squares x y)
+  (+ (square x) (square y)))
+; (sum-of-squares 3 4)
+
+(define (f a)
+  (sum-of-squares (+ a 1) (* a 2)))
+; (f 5)
+
+;;Variation on previous example (v. p. 17)
+;;(Doesn't work in SICP Scheme (R5RS))
+;;(define (fold-squares number-list)
+;;  (fold-left + 0 (map square number-list)))
+; (fold-squares '(3 4))
+
+;; First examples of conditionals (1.1.6, v. pp. 22-24)
+
+; (define (abs x)
+; (cond ((> x 0) x)
+;       ((= x 0) x)
+;       ((< x 0) (- x))))
+
+; (define (abs x)
+; (cond ((< x 0) (- x))
+; (else x)))
+
+(define (abs x)
+  (if (< x 0)
+      (- x)
+      x))
+
+(abs -1)
+
+(define (>= x y) (or (> x y) (= x y)))
+(>= 4 2)
+
+
+;Exercise 1.2: Translate the following expression into prefix
+; form (v. p. 27): 
+(/ 
+ (+ 5 (+ 4 (- 2 (- 3 (+ 6 (/ 4 5)))))) 
+ (* (* 3 (- 6 2)) (- 2 7))
+ )
+
+;Exercise 1.3: Define a procedure that takes three numbers
+; as arguments and returns the sum of the squares of the two
+; larger numbers.
+
+;Assert (sum-square-of-two-largest 1 2 3) = 13
+(define (sqrTwo x y z)
+  (cond ((and (< x y) (< x z)) (sum-of-squares y z))
+        ((and (< y z) (< y x)) (sum-of-squares x z))
+        ((and (< z x) (< z y)) (sum-of-squares x y))
+        )
+  )
+
+(sqrTwo 1 2 3)
+
+;Exercise 1.4:
+;Check and complete
+
+
+
+
+
+;; 1.1.7 Formalizing Newton's Method
+(define (sqrt-iter guess x)
+  (if (good-enough? guess x)
+      guess
+      (sqrt-iter (improve guess x) x)
+      )
+  )
+(define (improve guess x)
+  (average guess (/ x guess))
+  )
+(define (average x y)
+  (/ (+ x y) 2)
+  )
+(define (good-enough? guess x)
+  (< (abs (- (square guess) x)) 0.001)
+  )
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x)
+  )
+
+(sqrt 9)
+
+;; Exercises 1.6:
+;; The New-If used in this alternative definition of sqrt-iter is a procedure, therefore it's arguments are evaluated in
+;;applicative order, and since it's second argument is a recursive call to the sqrt-iter procedure itself, the New-If procedure never
+;;ceases to attempt the evaluation of it's second argument.
+
+;; Exercise 1.7:
+;; Improve sqrt by improving good-enough?
+(define (guess-is-better? guess prev-guess)
+  (< (abs(- 1 (/ prev-guess guess))) 0.001)
+  )
+(define (new-sqrt-iter guess prev-guess x)
+  (if (guess-is-better? guess prev-guess )
+      guess
+      (new-sqrt-iter (improve guess x) guess x)
+      )
+  )
+(define (new-sqrt x)
+  (new-sqrt-iter 1.0 x x)
+  )
+
+;;Exercise 1.8:
+;; Cube root:
+
+(define (improve-cube-guess x guess)
+  (/ (+ (/ x (square guess) (* guess 2)) ) 3)
+     )
+ 
+(define (cube-root-iter guess prev-guess x)
+  (if (guess-is-better? guess prev-guess )
+      guess
+      (cube-root-iter (improve-cube-guess x guess) guess x) 
+  )
+)
+(define (cube-root x)
+  (cube-root-iter 1.0 x x)
+  )
